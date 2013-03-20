@@ -2,8 +2,13 @@
 /*** APP VIEW ***/
 
 var app = app || {};
-var PER_ROW = 3;
 var SCROLL_DIST = 30;
+var TOTAL = 150;
+var PER_CALL = 30;
+var CATEGORIES = 3;
+var CALLS_PER_CAT = TOTAL / PER_CALL;
+var CALLS = CALLS_PER_CAT * CATEGORIES;
+var PER_PAGE = 9;
 
 (function() {
 	
@@ -13,25 +18,37 @@ var SCROLL_DIST = 30;
 		
 		el: 'body',
 		
-		// Delegated events. Switch from mousedown to click for showing input?
-		events: {
-			//'click': 'toggleInput',
-		},
-		
 		initialize: function() {
+			
+			this.category = 'popular';
+			this.page = 0;
 
-			var callback = _.after(3, this.drawGrid);
+			var callback = _.after(CALLS, this.drawGrid);
 			this.getData('popular', app.Popular, callback);
 			this.getData('debuts', app.Debuts, callback);
 			this.getData('everyone', app.Everyone, callback);
 
 			var that = this;
 			$('.category').click(function() {
-				that.drawGrid( $(this).text() );
+
+				$('#grid').html('');
+
+				var cat = $(this).text();
+				that.category = cat;
+				that.drawGrid(cat, 0);
+
 			});
 
-			$('body').scroll(function() {
-				if ($(document).scrollTop() - $(document).height() < SCROLL_DIST)
+			$(window).scroll(function() {
+
+				var bottom = $(document).height() - $(window).height();
+
+				if (bottom - $(document).scrollTop() < SCROLL_DIST) {
+
+					that.page++;
+					that.drawGrid(that.category, that.page);
+
+				}
 			});
 			
 		},
@@ -40,20 +57,28 @@ var SCROLL_DIST = 30;
 			
 			var that = this;
 
-			$.ajax({
-				type: "GET",
-				url: "http://api.dribbble.com/shots/" + string + "?callback=?",
-				dataType: "jsonp",
-				success: function(data) {
-					that.saveModels(data, coll);
-					callback('popular');
-				}
-			});
+			for (var i = 0; i < CALLS_PER_CAT; i++) {
+
+				$.ajax({
+					type: "GET",
+					url: "http://api.dribbble.com/shots/" + string + "?callback=?",
+					data: { page: i, 'per_page': PER_CALL },
+					dataType: "jsonp",
+
+					success: function(data) {
+
+						that.saveModels(data, coll);
+						callback(that.category, 0);
+
+					}
+				});
+
+			}
 
 		},
 
 		saveModels: function(data, coll) {
-
+			
 			var shots = data.shots;
 
 			for (var i = 0; i < shots.length; i++) {
@@ -74,9 +99,7 @@ var SCROLL_DIST = 30;
 			coll.create(attributes);
 		},
 
-		drawGrid: function(category) {
-			
-			$('#grid').html('');
+		drawGrid: function(category, page) {
 
 			var coll;
 
@@ -87,39 +110,13 @@ var SCROLL_DIST = 30;
 			} else if (category === 'everyone') {
 				coll = app.Everyone;
 			}
+			
+			coll = coll.toArray().slice(PER_PAGE * page, PER_PAGE * (page + 1));
+			
+			_.each(coll, function(model) {
 
-			coll.each(function(model) {
 				var view = new app.BoxView({ model: model });
 				$('#grid').append(view.render().$el);
-			});
-
-		},
-		
-		scrollWhileSelecting: function() {
-
-			$(window).mousemove(function(e) {
-
-				var sens = 10, speed = 20, $d = $(document);
-
-				if (e.pageY - $d.scrollTop() < sens) {
-
-					$d.scrollTop($d.scrollTop() - speed);
-
-				} else if ($(window).height() - (e.pageY - $d.scrollTop()) < sens) {
-
-					$d.scrollTop($d.scrollTop() + speed);
-
-				}
-
-				if (e.pageX - $d.scrollLeft() < sens) {
-
-					$d.scrollLeft($d.scrollLeft() - speed);
-
-				} else if ($(window).width() - (e.pageX - $d.scrollLeft()) < sens) {
-
-					$d.scrollLeft($d.scrollLeft() + speed);
-					
-				}
 
 			});
 
