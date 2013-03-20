@@ -12,23 +12,11 @@ var app = app || {};
 		className: 'box',
 		
 		template: _.template( $('#box-template').html() ),
-		
-		events: {
-			'click': 'respondToClick',	
-		},
-		
-		initialize: function() {
-
-		},
 
 		render: function() {
 			this.$el.html(this.template(this.model.toJSON()));
 			return this;
-		},
-
-		respondToClick: function() {
-
-		},
+		}
 		
 	});
 

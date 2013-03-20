@@ -35,7 +35,8 @@ var PER_PAGE = 9;
 
 				var cat = $(this).text();
 				that.category = cat;
-				that.drawGrid(cat, 0);
+				that.page = 0;
+				that.drawGrid(cat, that.page);
 
 			});
 
