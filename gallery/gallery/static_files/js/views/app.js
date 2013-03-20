@@ -3,6 +3,7 @@
 
 var app = app || {};
 var PER_ROW = 3;
+var SCROLL_DIST = 30;
 
 (function() {
 	
@@ -23,6 +24,15 @@ var PER_ROW = 3;
 			this.getData('popular', app.Popular, callback);
 			this.getData('debuts', app.Debuts, callback);
 			this.getData('everyone', app.Everyone, callback);
+
+			var that = this;
+			$('.category').click(function() {
+				that.drawGrid( $(this).text() );
+			});
+
+			$('body').scroll(function() {
+				if ($(document).scrollTop() - $(document).height() < SCROLL_DIST)
+			});
 			
 		},
 		
@@ -36,7 +46,7 @@ var PER_ROW = 3;
 				dataType: "jsonp",
 				success: function(data) {
 					that.saveModels(data, coll);
-					callback(that, 'Popular');
+					callback('popular');
 				}
 			});
 
@@ -64,64 +74,25 @@ var PER_ROW = 3;
 			coll.create(attributes);
 		},
 
-		drawGrid: function(that, category) {
+		drawGrid: function(category) {
 			
+			$('#grid').html('');
+
 			var coll;
 
-			if (category === 'Popular') {
+			if (category === 'popular') {
 				coll = app.Popular;
-			} else if (category === 'Debuts') {
+			} else if (category === 'debuts') {
 				coll = app.Debuts;
-			} else if (category === 'Everyone') {
+			} else if (category === 'everyone') {
 				coll = app.Everyone;
 			}
 
-			coll = _.toArray(coll);
-
-			for (var i = 0; i < coll.length / PER_ROW; i++) {
-				that.drawRow(coll.slice(i, i + PER_ROW));
-			}
-
-		},
-
-		drawRow: function(models) {
-			
-			for (var i = 0; i < models.length; i++) {
-				var view = new app.BoxView({ model: models[i] });
-				this.$el.append(view.render().$el);
-			}
-
-		},
-		
-		listen: function() {
-			
-			this.listenToCollection(app.Marks);
-			var d = app.dispatcher = _.extend({}, Backbone.Events);
-			d.on('zoom', this.zoom, this);
-
-		},
-		
-		listenToCollection: function(coll) {
-			
-			var that = this;
-
-			coll.on('add', function(model) {
-				if (!model.get('silent')) that.createViewForModel(model);
+			coll.each(function(model) {
+				var view = new app.BoxView({ model: model });
+				$('#grid').append(view.render().$el);
 			});
-			
-			coll.on('reset', this.renderCollection, this);
-		},
 
-		createViewForModel: function(model) {
-
-			var Constructor = (model.type === 'mark') ? app.MarkView : app.WaypointView;
-			var view = new Constructor({ model: model });
-			return view.render();
-
-		},
-		
-		renderCollection: function(coll) {
-			coll.each(this.createViewForModel, this);
 		},
 		
 		scrollWhileSelecting: function() {
