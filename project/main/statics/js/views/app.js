@@ -20,27 +20,29 @@ var PER_PAGE = 9;
 		
 		initialize: function() {
 			
-			this.category = 'popular';
-			this.page = 0;
+			_.bindAll(this); // So drawGrid's `this` is the view, not the window.
 
-			var callback = _.after(CALLS, this.drawGrid);
+			this.category = 'popular'; // Showing the popular shots at first.
+			this.page = 0; 			   // Starting on first page.
+
+			var callback = _.once(this.drawGrid);  // Draw after first page of `popular` is retrieved (but not again).
 			this.getData('popular', app.Popular, callback);
-			this.getData('debuts', app.Debuts, callback);
-			this.getData('everyone', app.Everyone, callback);
+			this.getData('debuts', app.Debuts);
+			this.getData('everyone', app.Everyone);
 
 			var that = this;
 			$('.category').click(function() {
 
-				$('#grid').html('');
+				$('#grid').html('');		// Clear the grid.
+				$(document).scrollTop(0);	// Scroll back to the top.
 
-				$('.category').css('color', 'black');
-				$(this).css('color', 'red');
+				$('.category').css('color', 'black');  // Make all categories black.
+				$(this).css('color', 'red');		   // Make selected category red.
 
-				var cat = $(this).text();
-				that.category = cat;
-				that.page = 0;
-				$(document).scrollTop(0);
-				that.drawGrid(cat, that.page);
+				that.category = $(this).text();		   // Save category as view variable.
+				that.page = 0;						   // Save page number as view variable.
+				
+				that.drawGrid();
 
 			});
 
@@ -51,13 +53,15 @@ var PER_PAGE = 9;
 				if (bottom - $(document).scrollTop() < SCROLL_DIST) {
 
 					that.page++;
-					that.drawGrid(that.category, that.page);
+					that.drawGrid();  // Add more pictures to the page.
 
 				}
 			});
 			
 		},
 		
+		// Uses jsonp do avoid cross-domain issues.  In a full app would
+		// probably make this call on the server-side.
 		getData: function(string, coll, callback) {
 			
 			var that = this;
@@ -73,7 +77,7 @@ var PER_PAGE = 9;
 					success: function(data) {
 
 						that.saveModels(data, coll);
-						callback(that.category, 0);
+						if (callback) callback(that.category, 0);
 
 					}
 				});
@@ -104,8 +108,9 @@ var PER_PAGE = 9;
 			coll.create(attributes);
 		},
 
-		drawGrid: function(category, page) {
-
+		drawGrid: function() {
+			
+			var category = this.category, page = this.page;
 			var coll;
 
 			if (category === 'popular') {
@@ -116,12 +121,14 @@ var PER_PAGE = 9;
 				coll = app.Everyone;
 			}
 			
+			// Get the chunk of the array that corresponds to the page to be drawn.
 			coll = coll.toArray().slice(PER_PAGE * page, PER_PAGE * (page + 1));
 			
 			_.each(coll, function(model) {
 
 				var view = new app.BoxView({ model: model });
-				$('#grid').append(view.render().$el);
+				$('#grid').append(view.render().$el); // Pictures are appended, regardless of
+													  // whether some pics are already there.
 
 			});
 
