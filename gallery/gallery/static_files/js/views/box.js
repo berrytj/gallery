@@ -1,11 +1,13 @@
 
 /*** BOX VIEW ***/
 
+var app = app || {};
+
 (function() {
 	
 	'use strict';
 	
-	app.MarkView = app.ObjectView.extend({
+	app.BoxView = Backbone.View.extend({
 		
 		className: 'box',
 		
@@ -15,10 +17,18 @@
 			'click': 'respondToClick',	
 		},
 		
-		initialize: function() {
-			
+		initialize: function(options) {
+			this.shot = options.shot;
+		},
+
+		render: function() {
+			this.$el.html(this.template(this.shot.toJSON()));
+		},
+
+		respondToClick: function() {
+
 		},
 		
 	});
 
-});
+}());

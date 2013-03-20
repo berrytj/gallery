@@ -13,49 +13,91 @@ var app = app || {};
 		
 		// Delegated events. Switch from mousedown to click for showing input?
 		events: {
-			'click': 'toggleInput',
+			//'click': 'toggleInput',
 		},
 		
 		initialize: function() {
 
-			this.setViewVariables();
-			this.setAppVariables();
-			this.listen();
-			this.getData();
+			this.getData('popular', app.Popular);
+			this.getData('debut', app.Debut);
+			this.getData('everyone', app.Everyone);
+			this.drawGrid('Popular');
 			
 		},
 		
-		getData: function() {
+		getData: function(string, coll) {
 			
+			var that = this;
+
 			$.ajax({
-			    type: "GET",
-			    url: "http://api.dribbble.com/shots/everyone?callback=?",
-			    dataType: "jsonp",
-			    success: function(data) {
-			        $('#grid').text(data);
-			    }
+				type: "GET",
+				url: "http://api.dribbble.com/shots/" + string + "?callback=?",
+				dataType: "jsonp",
+				success: function(data) {
+					that.saveModels(data, coll);
+				}
 			});
-			
+
+		},
+
+		saveModels: function(data, coll) {
+
+			var shots = data.shots;
+
+			for (var i = 0; i < shots.length; i++) {
+				this.createModel(shots[i], coll);
+			}
+
+		},
+
+		createModel: function(shot, coll) {
+
+			var attributes = {
+				likes:    shot['likes_count'],
+				comments: shot['comments_count'],
+				image:    shot['image_url'],
+				title:    shot['title']
+			};
+
+			coll.create(attributes);
+		},
+
+		drawGrid: function(category) {
+
+			var coll;
+
+			if (category === 'Popular') {
+				coll = app.Popular;
+			} else if (category === 'Debut') {
+				coll = app.Debut;
+			} else if (category === 'Everyone') {
+				coll = app.Everyone;
+			}
+
+			var num_rows = coll.length / 3;
+			for (var i = 0; i < num_rows; i++) {
+				this.drawRow(shots.slice(i, i + 3));
+			}
+
+
+		},
+
+		drawRow: function(shots) {
+
+			for (var i = 0; i < shots.length; i++) {
+				model = this.createModel(shots[i]);
+				var view = new app.BoxView({ shot: shots[i] });
+				view.render();
+			}
+
 		},
 		
 		listen: function() {
 			
 			this.listenToCollection(app.Marks);
-			this.listenToCollection(app.Waypoints);
-			
-			this.listenToUndoKeys();
-			this.listenForCopyPaste();
-			
-			var d = app.dispatcher = _.extend({}, Backbone.Events);  // Use extend to clone other objects?
-			
-			d.on('zoom',           this.zoom,             this);
-			d.on('undo',           this.undo,             this);
-			d.on('list',           this.list,             this);
-			d.on('paste',          this.pasteFromColl,    this);
-			d.on('clear:redos',    this.clearRedos,       this);
-			d.on('clear:selected', this.clearSelected,    this);
-			d.on('undoMarker',     this.undoMarker,       this);
-			d.on('close:inputs',   this.hideInputs,       this);
+			var d = app.dispatcher = _.extend({}, Backbone.Events);
+			d.on('zoom', this.zoom, this);
+
 		},
 		
 		listenToCollection: function(coll) {

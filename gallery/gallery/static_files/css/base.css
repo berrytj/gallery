@@ -1,0 +1,40 @@
+body {
+    font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight:300;
+    font-size:14px;
+}
+
+.box {
+    float:left;
+    margin-left:30px;
+    width:400px;
+    height:400px;
+
+    border:1px solid orange;
+}
+
+.image {
+    position:relative;
+    width:70%;
+    height:70%;
+    margin-top:10%;
+    margin-left:15%;
+
+    border:1px solid purple;
+}
+
+.likes {
+    position:relative;
+    width:50%;
+    height:100%;
+
+    border:1px solid green;
+}
+
+.comments {
+    position:relative;
+    width:50%;
+    height:100%;
+
+    border:1px solid red;
+}
