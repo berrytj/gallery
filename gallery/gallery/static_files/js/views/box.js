@@ -17,12 +17,13 @@ var app = app || {};
 			'click': 'respondToClick',	
 		},
 		
-		initialize: function(options) {
-			this.shot = options.shot;
+		initialize: function() {
+
 		},
 
 		render: function() {
-			this.$el.html(this.template(this.shot.toJSON()));
+			this.$el.html(this.template(this.model.toJSON()));
+			return this;
 		},
 
 		respondToClick: function() {

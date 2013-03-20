@@ -2,6 +2,7 @@
 /*** APP VIEW ***/
 
 var app = app || {};
+var PER_ROW = 3;
 
 (function() {
 	
@@ -18,14 +19,14 @@ var app = app || {};
 		
 		initialize: function() {
 
-			this.getData('popular', app.Popular);
-			this.getData('debut', app.Debut);
-			this.getData('everyone', app.Everyone);
-			this.drawGrid('Popular');
+			var callback = _.after(3, this.drawGrid);
+			this.getData('popular', app.Popular, callback);
+			this.getData('debuts', app.Debuts, callback);
+			this.getData('everyone', app.Everyone, callback);
 			
 		},
 		
-		getData: function(string, coll) {
+		getData: function(string, coll, callback) {
 			
 			var that = this;
 
@@ -35,6 +36,7 @@ var app = app || {};
 				dataType: "jsonp",
 				success: function(data) {
 					that.saveModels(data, coll);
+					callback(that, 'Popular');
 				}
 			});
 
@@ -51,7 +53,7 @@ var app = app || {};
 		},
 
 		createModel: function(shot, coll) {
-
+			
 			var attributes = {
 				likes:    shot['likes_count'],
 				comments: shot['comments_count'],
@@ -62,32 +64,31 @@ var app = app || {};
 			coll.create(attributes);
 		},
 
-		drawGrid: function(category) {
-
+		drawGrid: function(that, category) {
+			
 			var coll;
 
 			if (category === 'Popular') {
 				coll = app.Popular;
-			} else if (category === 'Debut') {
-				coll = app.Debut;
+			} else if (category === 'Debuts') {
+				coll = app.Debuts;
 			} else if (category === 'Everyone') {
 				coll = app.Everyone;
 			}
 
-			var num_rows = coll.length / 3;
-			for (var i = 0; i < num_rows; i++) {
-				this.drawRow(shots.slice(i, i + 3));
-			}
+			coll = _.toArray(coll);
 
+			for (var i = 0; i < coll.length / PER_ROW; i++) {
+				that.drawRow(coll.slice(i, i + PER_ROW));
+			}
 
 		},
 
-		drawRow: function(shots) {
-
-			for (var i = 0; i < shots.length; i++) {
-				model = this.createModel(shots[i]);
-				var view = new app.BoxView({ shot: shots[i] });
-				view.render();
+		drawRow: function(models) {
+			
+			for (var i = 0; i < models.length; i++) {
+				var view = new app.BoxView({ model: models[i] });
+				this.$el.append(view.render().$el);
 			}
 
 		},
@@ -121,18 +122,6 @@ var app = app || {};
 		
 		renderCollection: function(coll) {
 			coll.each(this.createViewForModel, this);
-		},
-
-		createModel: function(coll, text, pos) {
-
-			var attributes = {
-				wall: WALL_URL,
-				text: text,
-				x: Math.round(pos.left / app.factor),
-				y: Math.round(pos.top  / app.factor)
-			};
-
-			coll.create(attributes, { success: this.createEmptyUndo });
 		},
 		
 		scrollWhileSelecting: function() {

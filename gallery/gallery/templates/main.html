@@ -11,13 +11,10 @@
 	
 	<div id='toolbar'>toolbar</div>
 
-	<div id='grid'>grid grid grid</div>
-
-
 	<script type='text/template' id='box-template'>
-		<div class='image'></div>
-		<div class='likes'></div>
-		<div class='comments'></div>
+		<img src='<%- image %>' />
+		<span class='info likes'><%- likes %> Likes</span>
+		<span class='info comments'><%- comments %> Comments</span>
 	</script>
 
 	<script src="{{STATIC_URL}}lib/jquery.min.js"></script>
