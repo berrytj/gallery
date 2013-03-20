@@ -27,7 +27,14 @@ var app = app || {};
 		
 		getData: function() {
 			
-
+			$.ajax({
+			    type: "GET",
+			    url: "http://api.dribbble.com/shots/everyone?callback=?",
+			    dataType: "jsonp",
+			    success: function(data) {
+			        $('#grid').text(data);
+			    }
+			});
 			
 		},
 		
