@@ -33,6 +33,9 @@ var PER_PAGE = 9;
 
 				$('#grid').html('');
 
+				$('.category').css('color', 'black');
+				$(this).css('color', 'red');
+
 				var cat = $(this).text();
 				that.category = cat;
 				that.page = 0;
