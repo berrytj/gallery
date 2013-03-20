@@ -23,7 +23,7 @@ var PER_PAGE = 9;
 			_.bindAll(this); // So drawGrid's `this` is the view, not the window.
 
 			this.category = 'popular'; // Showing the popular shots at first.
-			this.page = 0; 			   // Starting on first page.
+			this.page = 0; 		   // Starting on first page.
 
 			var callback = _.once(this.drawGrid);  // Draw after first page of `popular` is retrieved (but not again).
 			this.getData('popular', app.Popular, callback);
@@ -37,10 +37,10 @@ var PER_PAGE = 9;
 				$(document).scrollTop(0);	// Scroll back to the top.
 
 				$('.category').css('color', 'black');	// Make all categories black.
-				$(this).css('color', 'red');			// Make selected category red.
+				$(this).css('color', 'red');		// Make selected category red.
 
 				that.category = $(this).text();	// Save category as view variable.
-				that.page = 0;					// Save page number as view variable.
+				that.page = 0;			// Save page number as view variable.
 				
 				that.drawGrid();
 
@@ -121,14 +121,14 @@ var PER_PAGE = 9;
 				coll = app.Everyone;
 			}
 			
-			// Get the chunk of the array that corresponds to the page to be drawn.
+			// Get the chunk of the collection that corresponds to the page to be drawn.
 			coll = coll.toArray().slice(PER_PAGE * page, PER_PAGE * (page + 1));
 			
 			_.each(coll, function(model) {
 
 				var view = new app.BoxView({ model: model });
 				$('#grid').append(view.render().$el);	// Pictures are appended, regardless of
-														// whether some pics are already there.
+									// whether some pics are already there.
 
 			});
 
