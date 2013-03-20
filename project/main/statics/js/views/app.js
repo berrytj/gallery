@@ -36,11 +36,11 @@ var PER_PAGE = 9;
 				$('#grid').html('');		// Clear the grid.
 				$(document).scrollTop(0);	// Scroll back to the top.
 
-				$('.category').css('color', 'black');  // Make all categories black.
-				$(this).css('color', 'red');		   // Make selected category red.
+				$('.category').css('color', 'black');	// Make all categories black.
+				$(this).css('color', 'red');			// Make selected category red.
 
-				that.category = $(this).text();		   // Save category as view variable.
-				that.page = 0;						   // Save page number as view variable.
+				that.category = $(this).text();	// Save category as view variable.
+				that.page = 0;					// Save page number as view variable.
 				
 				that.drawGrid();
 
@@ -60,8 +60,8 @@ var PER_PAGE = 9;
 			
 		},
 		
-		// Uses jsonp do avoid cross-domain issues.  In a full app would
-		// probably make this call on the server-side.
+		// Using jsonp to avoid cross-domain issues.  In a full
+		// app would probably make this call on the server-side.
 		getData: function(string, coll, callback) {
 			
 			var that = this;
@@ -127,8 +127,8 @@ var PER_PAGE = 9;
 			_.each(coll, function(model) {
 
 				var view = new app.BoxView({ model: model });
-				$('#grid').append(view.render().$el); // Pictures are appended, regardless of
-													  // whether some pics are already there.
+				$('#grid').append(view.render().$el);	// Pictures are appended, regardless of
+														// whether some pics are already there.
 
 			});
 
