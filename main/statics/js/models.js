@@ -13,8 +13,9 @@ var app = app || {};
 		url: '/',
 	});
 	
-	app.Popular  = new BoxSet();
-	app.Debuts   = new BoxSet();
-	app.Everyone = new BoxSet();
+	app.colls = {};
+	app.colls['popular']  = new BoxSet();
+	app.colls['debuts']   = new BoxSet();
+	app.colls['everyone'] = new BoxSet();
 
 }());

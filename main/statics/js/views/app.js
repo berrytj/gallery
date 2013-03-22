@@ -26,11 +26,21 @@ var PER_PAGE = 9;
 			this.page = 0; 		   // Starting on first page.
 
 			var callback = _.once(this.drawGrid);  // Draw after first page of `popular` is retrieved (but not again).
-			this.getData('popular', app.Popular, callback);
-			this.getData('debuts', app.Debuts);
-			this.getData('everyone', app.Everyone);
+			this.getData('popular', callback);
+			this.getData('debuts');
+			this.getData('everyone');
+
+			this.categoryClick();
+			this.infiniteScroll();
+
+		},
+
+		// When user selects a category, empty the page and
+		// repopulate with shots from the category.
+		categoryClick: function() {
 
 			var that = this;
+
 			$('.category').click(function() {
 
 				$('#grid').html('');		// Clear the grid.
@@ -46,6 +56,14 @@ var PER_PAGE = 9;
 
 			});
 
+		},
+
+		// When user reaches the bottom of the page (within
+		// SCROLL_DIST), append more shots to the document.
+		infiniteScroll: function() {
+
+			var that = this;
+
 			$(window).scroll(function() {
 
 				var bottom = $(document).height() - $(window).height();
@@ -57,12 +75,12 @@ var PER_PAGE = 9;
 
 				}
 			});
-			
+
 		},
 		
 		// Using jsonp to avoid cross-domain issues.  In a full
 		// app would probably make this call on the server-side.
-		getData: function(string, coll, callback) {
+		getData: function(category, callback) {
 			
 			var that = this;
 
@@ -70,13 +88,13 @@ var PER_PAGE = 9;
 
 				$.ajax({
 					type: "GET",
-					url: "http://api.dribbble.com/shots/" + string + "?callback=?",
+					url: "http://api.dribbble.com/shots/" + category + "?callback=?",
 					data: { page: i, 'per_page': PER_CALL },
 					dataType: "jsonp",
 
 					success: function(data) {
 
-						that.saveModels(data, coll);
+						that.saveModels(data, app.colls[category]);
 						if (callback) callback(that.category, 0);
 
 					}
@@ -86,6 +104,7 @@ var PER_PAGE = 9;
 
 		},
 
+		// Iterate through JSON data, saving shots to collection.
 		saveModels: function(data, coll) {
 			
 			var shots = data.shots;
@@ -96,6 +115,8 @@ var PER_PAGE = 9;
 
 		},
 
+		// Save appropriate data from a shot into a model
+		// and add it to a collection.
 		createModel: function(shot, coll) {
 			
 			var attributes = {
@@ -108,28 +129,20 @@ var PER_PAGE = 9;
 			coll.create(attributes);
 		},
 
+		// Find the appropriate shots and append their views
+		// to the document.
 		drawGrid: function() {
 			
-			var category = this.category, page = this.page;
-			var coll;
-
-			if (category === 'popular') {
-				coll = app.Popular;
-			} else if (category === 'debuts') {
-				coll = app.Debuts;
-			} else if (category === 'everyone') {
-				coll = app.Everyone;
-			}
-			
 			// Get the chunk of the collection that corresponds to the page to be drawn.
-			coll = coll.toArray().slice(PER_PAGE * page, PER_PAGE * (page + 1));
+			var coll = app.colls[this.category]
+				      .toArray()
+				      .slice(PER_PAGE * this.page, PER_PAGE * (this.page + 1));
 			
 			_.each(coll, function(model) {
 
 				var view = new app.BoxView({ model: model });
 				$('#grid').append(view.render().$el);	// Pictures are appended, regardless of
 									// whether some pics are already there.
-
 			});
 
 		},
