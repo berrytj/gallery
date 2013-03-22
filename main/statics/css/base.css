@@ -1,78 +1,56 @@
 body {
-    font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-weight:300;
-    font-size:14px;
-}
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 300;
+  font-size: 14px; }
 
 #toolbar {
-    position:fixed;
-    left:0;
-    top:0;
-    width:100%;
-    height:22px;
-    padding:10px 0px 7px 15%;
-    background-color:rgba(255,228,23,0.75);
-    z-index:1000;
-}
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 22px;
+  padding: 10px 0px 7px 15%;
+  background-color: rgba(255, 228, 23, 0.75);
+  z-index: 1000; }
 
 #toolbar span {
-    cursor:pointer;
-    margin-right:3%;
-    padding:3px 12px 4px 12px;
-    text-decoration:underline;
-    color:black;
-    border:1px dotted gray;
-    border-radius:12px;
-    background-color:rgba(255,255,255,0.5);
-}
+  cursor: pointer;
+  margin-right: 3%;
+  padding: 3px 12px 4px 12px;
+  text-decoration: underline;
+  color: black;
+  border: 1px dotted gray;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.5); }
 
 .box {
-    float:left;
-    margin-left:50px;
-    margin-top:100px;
-    width:310px;
-    height:310px;
-}
+  float: left;
+  margin-left: 50px;
+  margin-top: 100px;
+  width: 310px;
+  height: 310px; }
 
 .image {
-    position:relative;
-    width:80%;
-    height:80%;
-    margin-top:5%;
-    margin-left:10%;
-}
+  position: relative;
+  width: 80%;
+  height: 80%;
+  margin-top: 5%;
+  margin-left: 10%; }
 
 .detail {
-    margin-left:10%;
-    margin-top:3%;
-}
+  margin-left: 10%;
+  margin-top: 3%; }
 
 .info {
-    position:relative;
-    display:inline-block;
-    height:5%;
-    padding:2%;
-    margin-right:11%;
-}
+  position: relative;
+  display: inline-block;
+  height: 5%;
+  padding: 2%;
+  margin-right: 11%; }
 
 .icon {
-    display:inline;
-    width:17px;
-    height:17px;
-    padding-top:5px;
-    vertical-align:text-bottom;
-}
-
-.likes {
-    
-}
-
-.comments {
-    
-}
-
-
-
-
-
-
+  display: inline;
+  width: 17px;
+  height: 17px;
+  padding-top: 5px;
+  vertical-align: text-bottom; }
